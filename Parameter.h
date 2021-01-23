@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <vector>
 #include<type_traits>
 
 namespace CHECK
@@ -35,24 +36,29 @@ class Parameter {
     void operator = (ParameterType value) {
       set(value);
     }
+    ParameterType operator* (){
+      return _value;
+    }
 
-    void onChange(void func(ParameterType value)) {
-      _changeHandler = func;
+    void addListener(void func(ParameterType value)) {
+      _changeHandler.push_back(func);
     }
-    void onChange(void func(String name, ParameterType value)) {
-      _changeHandlerWithName = func;
+    void addListener(void func(String name, ParameterType value)) {
+      _changeHandlerWithName.push_back(func);
     }
-    void onChange(void func(Parameter<ParameterType>, ParameterType value)) {
-      // _changeHandlerWithParameter = func;
+    void addListener(void func(Parameter<ParameterType>, ParameterType value)) {
+      // _changeHandlerWithParameter.push_back(func);
     }
     void set(ParameterType value, bool notify = true) {
-      if(CHECK::ComperatorExists<ParameterType>::value){
-
+      if(CHECK::ComperatorExists<ParameterType>::value && _min != _max){
+        if(value >= _min && value <= _max){
+          _value = value;
+        }
       }else{
         _value = value;
       }
       if (notify) {
-        notifyListeners(value);
+        notifyListeners(_value);
       }
     }
 
@@ -81,9 +87,15 @@ class Parameter {
 
   protected:
     void notifyListeners(ParameterType value) {
-      _changeHandler(value);
-      _changeHandlerWithName(_name, value);
-      // _changeHandlerWithParameter(this, value);
+      for(auto changeHandler : _changeHandler){
+        changeHandler(value);
+      }
+      for(auto changeHandler : _changeHandlerWithName){
+        changeHandler(_name, value);
+      }
+      // for(auto changeHandler : _changeHandlerWithParameter){
+      //   changeHandler(this, value);
+      // }
     }
   private:
     ParameterType _value;
@@ -93,9 +105,8 @@ class Parameter {
     String _name;
     String _description;
 
-    //TODO: use vector to be able to add more than one listener
-    std::function<void(ParameterType)> _changeHandler;
-    std::function<void(String, ParameterType)> _changeHandlerWithName;
+    std::vector<std::function<void(ParameterType)>> _changeHandler;
+    std::vector<std::function<void(String, ParameterType)>> _changeHandlerWithName;
     // std::function<void(Parameter<ParameterType>, ParameterType)> _changeHandlerWithParameter;
 
 };
