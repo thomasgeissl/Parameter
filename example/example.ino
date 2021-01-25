@@ -1,5 +1,6 @@
 #include "Parameter.h"
 
+ParameterGroup _parameters;
 Parameter<int> _parameter;
 
 void setup() {
@@ -8,6 +9,8 @@ void setup() {
   _parameter.addListener([&](String name, int value) {
     Serial.println(name + " changed, new value: " + String(value));
   });
+
+  _parameters.add(_parameter);
 }
 
 void loop() {
@@ -28,7 +31,15 @@ void loop() {
         }
       case 'v': {
           Serial.print("current value: "); Serial.println(_parameter.get());
+          break;
+        }
 
+      case 'a': {
+          int value = _parameter;
+          break;
+        }
+      case 't': {
+          _parameters["Testname"]; //TODO: cast to int param
           break;
         }
       default: {

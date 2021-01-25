@@ -17,9 +17,29 @@ namespace CHECK
   };  
 }
 
+class BaseParameter{
+  public:
+    void setName(String name) {
+      _name = name;
+    }
+    String getName() {
+      return _name;
+    }
+    void setDescription(String value) {
+      _description = value;
+    }
+    String getDescription() {
+      return _description;
+    }
+
+  protected:
+    String _name;
+    String _description;
+
+};
 
 template<typename ParameterType>
-class Parameter {
+class Parameter : public BaseParameter{
   public:
     void setup(String name, ParameterType value, String description = ""){
       _name = name;
@@ -39,6 +59,8 @@ class Parameter {
     ParameterType operator* (){
       return _value;
     }
+    operator ParameterType&() { return _value; }
+    operator ParameterType() const { return _value; }
 
     void addListener(void func(ParameterType value)) {
       _changeHandler.push_back(func);
@@ -71,19 +93,7 @@ class Parameter {
       return _value;
     }
 
-    void setName(String name) {
-      _name = name;
-    }
-    String getName() {
-      return _name;
-    }
 
-    void setDescription(String value) {
-      _description = value;
-    }
-    String getDescription() {
-      return _description;
-    }
 
   protected:
     void notifyListeners(ParameterType value) {
@@ -102,11 +112,40 @@ class Parameter {
     ParameterType _min;
     ParameterType _max;
 
-    String _name;
-    String _description;
 
     std::vector<std::function<void(ParameterType)>> _changeHandler;
     std::vector<std::function<void(String, ParameterType)>> _changeHandlerWithName;
     // std::function<void(Parameter<ParameterType>, ParameterType)> _changeHandlerWithParameter;
 
+};
+
+
+class ParameterGroup {
+  public:
+    void setup(String name){
+      _name = name;
+    }
+    BaseParameter & operator [] (String name) {
+      for(auto & parameter : _parameters){
+        if(parameter.getName() == name){
+          return parameter;
+        }
+      }
+      // TODO: throw exception
+    }
+
+    void add(BaseParameter &parameter){
+      _parameters.push_back(parameter);
+    }
+    void add(ParameterGroup &parameterGroup){
+      
+    }
+    void setName(String name){
+      _name = name;
+    }
+    String getName(){
+      return _name;
+    }
+    std::vector<BaseParameter> _parameters;
+  String _name;
 };
