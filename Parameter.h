@@ -110,6 +110,13 @@ class Parameter : public BaseParameter{
       return _value;
     }
 
+    void setSerializer(std::function<String(Parameter<ParameterType>)> serializer){
+      _serializer = serializer;
+    }
+
+    String serialize(){
+      return _serializer(*this);
+    }
 
 
   protected:
@@ -124,6 +131,7 @@ class Parameter : public BaseParameter{
       //   changeHandler(this, value);
       // }
     }
+
   private:
     ParameterType _value;
     ParameterType _min;
@@ -133,7 +141,7 @@ class Parameter : public BaseParameter{
     std::vector<std::function<void(ParameterType)>> _changeHandler;
     std::vector<std::function<void(String, ParameterType)>> _changeHandlerWithName;
     // std::function<void(Parameter<ParameterType>, ParameterType)> _changeHandlerWithParameter;
-
+    std::function<String(Parameter<ParameterType>)> _serializer;
 };
 
 

@@ -7,6 +7,16 @@ IntParameter _parameter;
 void setup() {
   Serial.begin(115200);
   _parameter.setup("Testname", 9, 0, 9); //name, value, [min, max]
+
+  //  set a serializer, e.g. json, xml or comma seperated
+  //  TODO: add default serializer for int, float, double, String, bool, byte, ... types
+  _parameter.setSerializer([](Parameter<int> parameter) {
+    String message = parameter.getName(); message += ",";
+    message += String(parameter.getDescription()); message += ",";
+    message += String(parameter.get());
+    return message;
+  });
+
   _parameter.addListener([&](String name, int value) {
     Serial.println(name + " changed, new value: " + String(value));
   });
@@ -37,6 +47,15 @@ void loop() {
 
       case 'a': {
           int value = _parameter;
+          break;
+        }
+      case 'd': {
+          // String message = "Testname, ,9";
+          // _parameter.deserialize(message);
+          break;
+        }
+      case 's': {
+          Serial.println(_parameter.serialize());
           break;
         }
       case 't': {
