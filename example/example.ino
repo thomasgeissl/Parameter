@@ -1,7 +1,8 @@
 #include "Parameter.h"
 
 ParameterGroup _parameters;
-Parameter<int> _parameter;
+//Parameter<int> _parameter;
+IntParameter _parameter;
 
 void setup() {
   Serial.begin(115200);
@@ -39,7 +40,8 @@ void loop() {
           break;
         }
       case 't': {
-          _parameters["Testname"]; //TODO: cast to int param
+          auto param = _parameters["Testname"].as<int>();
+          param = 5;
           break;
         }
       default: {

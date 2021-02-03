@@ -17,6 +17,7 @@ namespace CHECK
   };  
 }
 
+template<typename ParameterType> class Parameter;
 class BaseParameter{
   public:
     void setName(String name) {
@@ -32,15 +33,31 @@ class BaseParameter{
       return _description;
     }
 
+    template<typename T>
+    T & as(){
+      auto param = static_cast<Parameter<T>*>(this);
+      return *param;
+    }
+
   protected:
     String _name;
     String _description;
-
+    bool _isSerializable;
 };
 
 template<typename ParameterType>
 class Parameter : public BaseParameter{
   public:
+    Parameter() {
+      int a;
+      // if(std::decltype(a) == std::decltype(_value)){
+
+      // }
+
+      // switch(decltype(_value)){
+
+      // }
+    }
     void setup(String name, ParameterType value, String description = ""){
       _name = name;
       _value = value;
@@ -49,9 +66,9 @@ class Parameter : public BaseParameter{
     void setup(String name, ParameterType value, ParameterType min, ParameterType max, String description = ""){
       _name = name;
       _value = value;
+      _description = description;      
       _min = min;
       _max = max;
-      _description = description;
     }
     void operator = (ParameterType value) {
       set(value);
@@ -149,3 +166,10 @@ class ParameterGroup {
     std::vector<BaseParameter> _parameters;
   String _name;
 };
+
+typedef Parameter<bool> BoolParameter;
+typedef Parameter<int> IntParameter;
+typedef Parameter<float> FloatParameter;
+typedef Parameter<double> DoubleParameter;
+typedef Parameter<byte> ByteParameter;
+typedef Parameter<String> StringParameter;
