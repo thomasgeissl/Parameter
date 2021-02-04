@@ -20,6 +20,7 @@ namespace CHECK
 template<typename ParameterType> class Parameter;
 class BaseParameter{
   public:
+    virtual ~BaseParameter(){};
     void setName(String name) {
       _name = name;
     }
@@ -34,8 +35,14 @@ class BaseParameter{
     }
 
     template<typename T>
-    T & as(){
-      auto param = static_cast<Parameter<T>*>(this);
+    Parameter<T> & as(){
+      // TODO: test and cleanup
+      auto param = static_cast<Parameter<T> *>(this);
+      if(!param){
+        Serial.println("could not cast param");
+      }else{
+        Serial.println("successfully casted param");
+      }
       return *param;
     }
 
