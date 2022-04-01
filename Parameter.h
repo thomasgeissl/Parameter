@@ -233,6 +233,15 @@ public:
   {
     return _name;
   }
+
+  bool includes(String name){
+    for(auto parameter : _parameters){
+      if(parameter.getName() == name){
+        return true;
+      }
+    }
+    return false;
+  }
   std::vector<BaseParameter> _parameters;
   String _name;
 };
