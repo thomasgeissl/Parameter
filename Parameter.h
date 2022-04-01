@@ -120,10 +120,14 @@ public:
   {
     // _changeHandlerWithParameter.push_back(func);
   }
-  void set(ParameterType value, bool notify = true)
+  void set(ParameterType value, bool notify = true, bool forceNotify = false)
   {
+    auto valueHasChanged = true;
     if (CHECK::ComperatorExists<ParameterType>::value && _min != _max)
     {
+      if(value == _value){
+        valueHasChanged = false;
+      }
       if (value >= _min && value <= _max)
       {
         _value = value;
@@ -133,7 +137,7 @@ public:
     {
       _value = value;
     }
-    if (notify)
+    if ((notify && valueHasChanged || forceNotify))
     {
       notifyListeners(_value);
     }
