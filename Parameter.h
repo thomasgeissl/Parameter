@@ -128,6 +128,11 @@ public:
       if(value == _value){
         valueHasChanged = false;
       }
+      if(value < _min){
+        value = _min;
+      }else if(value > _max){
+        value = _max;
+      }
       if (value >= _min && value <= _max)
       {
         _value = value;
