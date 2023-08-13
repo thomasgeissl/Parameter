@@ -57,7 +57,7 @@ public:
     }
     else
     {
-      Serial.println("successfully casted param");
+      // Serial.println("successfully casted param");
     }
     return *param;
   }
