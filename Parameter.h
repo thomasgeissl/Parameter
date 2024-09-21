@@ -27,8 +27,8 @@ class Parameter;
 class BaseParameter
 {
 public:
-  virtual ~BaseParameter(){};
-  
+  virtual ~BaseParameter() {};
+
   void setName(String name)
   {
     _name = name;
@@ -70,8 +70,20 @@ template <typename ParameterType>
 class Parameter : public BaseParameter
 {
 public:
-  Parameter() {}
-
+  Parameter()
+  {
+    setSerializer([](Parameter<ParameterType> &parameter)
+                  {
+            String json = "{";
+            json += "\"name\": \"" + parameter.getName() + "\",";
+            json += "\"description\": \"" + parameter.getDescription() + "\",";
+            json += "\"value\": " + String(parameter.get()) + ",";
+            json += "\"min\": " + String(parameter.getMin()) + ",";
+            json += "\"max\": " + String(parameter.getMax());
+            json += "}";
+            return json; });
+  }
+  
   void setup(String name, ParameterType value, String description = "")
   {
     _name = name;
@@ -108,7 +120,7 @@ public:
     return _value;
   }
 
-  void addListener(std::function<void(Parameter<ParameterType>&)> func)
+  void addListener(std::function<void(Parameter<ParameterType> &)> func)
   {
     _changeHandler.push_back(func);
   }
@@ -166,7 +178,7 @@ public:
     return _max;
   }
 
-  void setSerializer(std::function<String(Parameter<ParameterType>&)> serializer)
+  void setSerializer(std::function<String(Parameter<ParameterType> &)> serializer)
   {
     _serializer = serializer;
   }
@@ -190,8 +202,8 @@ private:
   ParameterType _min;
   ParameterType _max;
 
-  std::vector<std::function<void(Parameter<ParameterType>&)>> _changeHandler;
-  std::function<String(Parameter<ParameterType>&)> _serializer;
+  std::vector<std::function<void(Parameter<ParameterType> &)>> _changeHandler;
+  std::function<String(Parameter<ParameterType> &)> _serializer;
 };
 
 class ParameterGroup
@@ -245,6 +257,21 @@ public:
     }
     return false;
   }
+
+  // String serialize()
+  // {
+  //   String result = "{";
+  //   for (size_t i = 0; i < _parameters.size(); i++)
+  //   {
+  //     result += "\"" + _parameters[i].getName() + "\": " + _parameters[i].serialize();
+  //     if (i < _parameters.size() - 1)
+  //     {
+  //       result += ", ";
+  //     }
+  //   }
+  //   result += "}";
+  //   return result;
+  // }
 
   std::vector<BaseParameter> _parameters;
   String _name;
