@@ -1,66 +1,74 @@
 #include "Parameter.h"
 
 ParameterGroup _parameters;
-//Parameter<int> _parameter;
-IntParameter _parameter;
+// Parameter<int> _intParameter;
+IntParameter _intParameter;
 
 void setup() {
   Serial.begin(115200);
-  _parameter.setup("Testname", 9, 0, 9); //name, value, [min, max]
+  
+  // Setting up the parameter with name, value, min, max, and description
+  _intParameter.setup("intparameter", 9, 0, 9, "this is an int parameter"); 
 
-  //  set a serializer, e.g. json, xml or comma seperated
-  //  TODO: add default serializer for int, float, double, String, bool, byte, ... types
-  _parameter.setSerializer([](Parameter<int> parameter) {
-    String message = parameter.getName(); message += ",";
-    message += String(parameter.getDescription()); message += ",";
+  // Setting a custom serializer for the parameter (e.g. CSV format)
+  _intParameter.setSerializer([](Parameter<int>& parameter) {
+    String message = parameter.getName();
+    message += ",";
+    message += parameter.getDescription();
+    message += ",";
     message += String(parameter.get());
     return message;
   });
 
-  _parameter.addListener([&](String name, int value) {
-    Serial.println(name + " changed, new value: " + String(value));
+  // Adding a listener that notifies when the parameter changes
+  _intParameter.addListener([](Parameter<int>& parameter) {
+    Serial.println(parameter.getName() + " changed, new value: " + String(parameter.get()));
+    // Serial.println(parameter.serialize());
   });
 
-  _parameters.add(_parameter);
+  // Adding the parameter to the ParameterGroup
+  _parameters.add(_intParameter);
 }
 
 void loop() {
   if (Serial.available() > 0) {
     auto receivedByte = Serial.read();
+    
     switch (receivedByte) {
       case '1': {
-          _parameter = 1;
+          _intParameter = 1;
           break;
         }
       case '2': {
-          _parameter.set(2);
+          _intParameter.set(2);
           break;
         }
       case '3': {
-          _parameter.set(3, false); //do not notify listeners
+          _intParameter.set(3, false); // Do not notify listeners
           break;
         }
       case 'v': {
-          Serial.print("current value: "); Serial.println(_parameter.get());
+          Serial.print("current value: "); 
+          Serial.println(_intParameter.get());
           break;
         }
-
       case 'a': {
-          int value = _parameter;
+          int value = _intParameter;
+          Serial.println("Assigned value: " + String(value));
           break;
         }
       case 'd': {
-          // String message = "Testname, ,9";
-          // _parameter.deserialize(message);
+          // Deserialize logic if needed
           break;
         }
       case 's': {
-          Serial.println(_parameter.serialize());
+          Serial.println(_intParameter.serialize());
           break;
         }
       case 't': {
-          auto param = _parameters["Testname"].as<int>();
-          param = 5;
+          // Access parameter by name from ParameterGroup
+          auto& param = _parameters["intparameter"].as<int>();
+          param = 5; // Set the parameter's value
           break;
         }
       default: {
