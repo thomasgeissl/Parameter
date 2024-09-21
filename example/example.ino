@@ -3,12 +3,15 @@
 ParameterGroup _parameters;
 // Parameter<int> _intParameter;
 IntParameter _intParameter;
+Parameter<bool> _boolParameter;
+// BoolParameter _boolParameter;
 
 void setup() {
   Serial.begin(115200);
   
   // Setting up the parameter with name, value, min, max, and description
   _intParameter.setup("intparameter", 9, 0, 9, "this is an int parameter"); 
+  _boolParameter.setup("boolparameter", false, "this is a bool parameter"); 
 
   // Setting a custom serializer for the parameter (e.g. CSV format)
   _intParameter.setSerializer([](Parameter<int>& parameter) {
@@ -28,6 +31,7 @@ void setup() {
 
   // Adding the parameter to the ParameterGroup
   _parameters.add(_intParameter);
+  _parameters.add(_boolParameter);
 }
 
 void loop() {
